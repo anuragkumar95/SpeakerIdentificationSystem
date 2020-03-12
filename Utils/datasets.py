@@ -48,7 +48,7 @@ def createDataset(clientID2Index):
 if __name__ == '__main__':
     #Path to dataset tsv file
     data_file_path = sys.argv[1]
-    train = pd.read_csv('drive/My Drive/train.tsv', sep='\t')
+    train = pd.read_csv(data_file_path, sep='\t')
     
     #All speakers in my data
     num_speakers = len(set(train['client_id']))

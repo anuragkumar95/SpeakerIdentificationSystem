@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from tensorflow import keras
-from tqdm import tqdm_notebook
+#from tqdm import tqdm_notebook
 import matplotlib.pyplot as plt
 from tensorflow.keras import layers
 from tensorflow.keras.models import model_from_json
@@ -190,14 +190,8 @@ def train_network(model, encoder1, encoder2, train, ytrain, val, yval, batchsize
     return (hist, model, encoder1, encoder2)
 
 if __name__ == "__main__":
-    #Path to audio files
-    path_to_audio = sys.argv[1]
-
     #train tsv file
-    train_file_path = sys.argv[2]
-
-    #Create dataset for one-shot implementation
-    create_one_shot_data(train_file_path)
+    train_file_path = sys.argv[1]
 
     #loading features and splitting them into train, validation and test
     train, trainy, val, valy, test, testy = split_train_test()
@@ -205,7 +199,7 @@ if __name__ == "__main__":
     #Creating the model structure
     siamese, encoder1, encoder2 = SiameseNetwork(input_shape = (5388, 20, 3))
 
-    ori_train_file = pd.read_csv(train_path, sep = '\t')
+    ori_train_file = pd.read_csv(train_file_path, sep = '\t')
 
     #Training model
     model_hist, siamese, encoder1, encoder2 = train_network(model = siamese, encoder1 = encoder1, encoder2 = encoder2, train = train, trainy = trainy, val = val, valy = valy, train_files_df = ori_train_file, batchsize = 64, num_epochs = 1, model_save_path = "features/models/")
