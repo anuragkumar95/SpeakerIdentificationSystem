@@ -10,10 +10,6 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 
-if not sys.warnoptions:
-    import warnings
-    warnings.simplefilter("ignore")
-
 #Function for padding mfcc
 def padding(egs):
     max_val = max([e.shape[0] for e in egs])
@@ -35,7 +31,7 @@ def pad_features(path):
         np.save(path + name, feature)
 
 def create_features(path_to_audio, data_path):
-    save_path = r'C:/Users/Anurag Kumar/Documents/GitHub/Projects/Speaker Identification/data/features/'
+    save_path = r'~/SpeakerIdentificationSystem/data/features/'
     df = pd.read_csv(data_path, sep = '\t')
     frame_length = 1024
     hop_length = 80
@@ -80,3 +76,10 @@ def create_features(path_to_audio, data_path):
     pad_features(save_path + "DDMFCC/")
 
     print("Features created.........")
+
+if __name__ == '__main__':
+    path_to_audio_files = sys.argv[1]
+    data_path = sys.argv[2]
+    create_features(path_to_audio_files, data_path)
+    
+    

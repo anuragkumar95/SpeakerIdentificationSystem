@@ -6,52 +6,62 @@ import pandas as pd
 def read_csv(path):
     return pd.read_csv(path, sep = '\t') 
 
-def create_one_shot_data(path):
+
+def split_train_test(dataset):
+    train, trainy = dataset[:700000,:2], dataset[:700000,2] 
+    val, valy = dataset[700000:850000,:2],dataset[700000:850000,2]
+    test, testy = dataset[850000:,:2], dataset[850000:,2]
+    print(train.shape, trainy.shape, val.shape, valy.shape, test.shape, testy.shape)
+    return train, train_y, val, val_y, test, test_y
+
+
+#Creating similar and dissimilar datasets for Siamese Model
+def createDataset(clientID2Index):
+  similar_dataset = []
+  for i in clientID2Index:
+    for j in clientID2Index[i]:
+      for k in clientID2Index[i]:
+        inp1, inp2 = j,k
+        similar_dataset.append((inp1, inp2, 1))
+  
+  dissimilar_dataset = []
+  for i in clientID2Index:
+    other_speakers = [x for x in clientID2Index.keys() if i!=x]
+    for j in other_speakers:
+      for x in clientID2Index[i]:
+        for y in clientID2Index[j]:
+          inp1, inp2 = x,y
+          dissimilar_dataset.append((inp1, inp2, 0))
+  #Making both the labels balanced
+  ind = [i for i in range(len(dissimilar_dataset))]
+  if len(similar_dataset) < len(dissimilar_dataset):
+    indexes_to_have = random.sample(ind, len(similar_dataset))
+    dissimilar_dataset = [dissimilar_dataset[i] for i in indexes_to_have]
+  #Saving
+  dataset = np.array(similar_dataset + dissimilar_dataset)
+  #Shuffline dataset
+  np.random.shuffle(dataset)
+  print(dataset.shape)
+  np.save('SiameseDataset.npy', dataset)
+
+
+if __name__ == '__main__':
+    #Path to dataset tsv file
+    data_file_path = sys.argv[1]
+    train = pd.read_csv('drive/My Drive/train.tsv', sep='\t')
     
-    train = read_csv(path)
-    print("Reading training file....creating one_shot datasets..")
-    #All speakers in my train data
+    #All speakers in my data
     num_speakers = len(set(train['client_id']))
     spk = list(set(train['client_id']))
     mapped = {spk[i]:i for i in range(num_speakers)}
     train = train.replace(mapped)
 
     #The following dictionary stores a mapping of speakerID to indexes of examples
-    clientID2Index = {}
-    for i, r in train.iterrows():
-        spk = r['client_id']
-        val = r['path']
-        if spk not in clientID2Index:
-            clientID2Index[spk] = [val]
-        else:  
-            clientID2Index[spk].append(val)
-    
-    #Creating list of similar and different speaker pairs
-    similar_dataset = []
-    for i in clientID2Index:
-        for j in clientID2Index[i]:
-            for k in clientID2Index[i]:
-                inp1, inp2 = j,k
-                similar_dataset.append([inp1, inp2, 1])
-    
-    dissimilar_dataset = []
-    for i in clientID2Index:
-        other_speakers = [x for x in clientID2Index.keys() if i!=x]
-        for j in other_speakers:
-            for x in clientID2Index[i]:
-                for y in clientID2Index[j]:
-                    inp1, inp2 = x,y
-                    dissimilar_dataset.append([inp1, inp2, -1])
+    clientID2Index = {i:[] for i in range(28)}
 
-    one_shot_data = pd.DataFrame(dissimilar_dataset, columns = ['inp1', 'inp2', 'label'])
-    similar = pd.DataFrame(similar_dataset, columns = ['inp1', 'inp2', 'label'])
-    one_shot_data = pd.concat([one_shot_data, similar])
-    #shuffling the data
-    one_shot_data = one_shot_data.sample(frac = 1)
-    one_shot_data.to_csv('C:/Users/Anurag Kumar/Documents/GitHub/Projects/Speaker Identification/data/features/train.csv')
-    print("Successfully saved one_shot dataset")
-    '''
-    test_data = [['common_voice_es_18736428','common_voice_es_18736428',1],['common_voice_es_18736428','common_voice_es_18736428',1],['common_voice_es_18736428','common_voice_es_18736428',1]]  
-    test_df = pd.DataFrame(test_data, columns = ['inp1', 'inp2', 'label'])
-    test_df.to_csv('C:/Users/Anurag Kumar/Documents/GitHub/Projects/Speaker Identification/data/features/train.csv')
-    '''
+    for i, val in enumerate(train['client_id']):
+        clientID2Index[val].append(i)
+
+    createDataset(clientID2Index)
+    print("Successfully created one_shot_dataset...")
+    
