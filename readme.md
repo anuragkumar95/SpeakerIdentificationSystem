@@ -24,7 +24,7 @@ Run the command ```python spk_identification.py "path_to_train_tsv_file"```.
 ## Evaluating the model
 Run the command ```python Evaluation.py "path_to_train_tsv_file"```.
 
-
+Author: Anurag Kumar
 
 
 
