@@ -31,7 +31,7 @@ def pad_features(path):
         np.save(path + name, feature)
 
 def create_features(path_to_audio, data_path):
-    save_path = r'~/SpeakerIdentificationSystem/data/features/'
+    save_path = r'/home/anurag/SpeakerIdentificationSystem/features/data/'
     df = pd.read_csv(data_path, sep = '\t')
     frame_length = 1024
     hop_length = 80

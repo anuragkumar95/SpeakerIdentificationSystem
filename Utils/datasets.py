@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 import pandas as pd
+import random
 
 def read_csv(path):
     return pd.read_csv(path, sep = '\t') 
@@ -12,7 +13,7 @@ def split_train_test(dataset):
     val, valy = dataset[700000:850000,:2],dataset[700000:850000,2]
     test, testy = dataset[850000:,:2], dataset[850000:,2]
     print(train.shape, trainy.shape, val.shape, valy.shape, test.shape, testy.shape)
-    return train, train_y, val, val_y, test, test_y
+    return train, trainy, val, valy, test, testy
 
 
 #Creating similar and dissimilar datasets for Siamese Model

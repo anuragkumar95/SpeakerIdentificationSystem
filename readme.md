@@ -16,14 +16,13 @@ python Utils/features.py "path_to_audio_clips" "path_to_train_tsv_file"
 The above command will create the features and store in path ```features/data/```. 
 
 ## Creating the One Shot Dataset
-Run the command ```python Utils/dataset.py "path_to_train_tsv_file"```. This will create ```SiameseDataset.npy``` at path ```Utils/```.
+Run the command ```python Utils/datasets.py "path_to_train_tsv_file"```. This will create ```SiameseDataset.npy``` at path ```Utils/```.
 
 ## Training the model
-Run the command ```python spk_identification.py "path_to_train_tsv_file"```.
+Run the command ```python spk_identification.py "path_to_train_tsv_file" "SiameseDataset.npy"```.
 
 ## Evaluating the model
 Run the command ```python Evaluation.py "path_to_train_tsv_file"```.
-
 
 
 

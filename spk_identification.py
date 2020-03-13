@@ -11,8 +11,7 @@ from tensorflow import keras
 import matplotlib.pyplot as plt
 from tensorflow.keras import layers
 from tensorflow.keras.models import model_from_json
-from Utils.datasets import read_csv, create_one_shot_data, split_train_test
-from Utils.features import create_features
+from Utils.datasets import split_train_test
 
 
 def make_feats(filename):
@@ -54,14 +53,14 @@ def Encoder(input_shape, embedding_dimension, drop_out=0.05):
     out3 = layers.MaxPooling2D((5,1))(drops3)
     
     #Convolution layer 4
-    layer4 = layers.Conv2D(15, 5, actop_out)(norm5), name="L41", padding='same')(out3)
-    norm4 = layers.BatchNormalizationop_out)(norm5)
-    drops4 = layers.SpatialDropout2D(op_out)(norm5)4)
-    out4 = layers.MaxPooling2D(1)(droop_out)(norm5)
+    layer4 = layers.Conv2D(15, 5, activation='relu', name="L41", padding='same')(out3)
+    norm4 = layers.BatchNormalization()(layer4)
+    drops4 = layers.SpatialDropout2D(drop_out)(norm4)
+    out4 = layers.MaxPooling2D(1)(drops4)
 
     #Convolution layer 5
-    layer5 = layers.Conv2D(10, 5, actop_out)(norm5), name="L51", padding='same')(out4)
-    norm5 = layers.BatchNormalizationop_out)(norm5)
+    layer5 = layers.Conv2D(10, 5, activation='relu', name="L51", padding='same')(out4)
+    norm5 = layers.BatchNormalization()(layer5)
     out5 = layers.SpatialDropout2D(drop_out)(norm5)
 
     #Flattened layer
@@ -193,8 +192,10 @@ if __name__ == "__main__":
     #train tsv file
     train_file_path = sys.argv[1]
 
+    train_data_path = sys.argv[2]
+
     #loading features and splitting them into train, validation and test
-    train, trainy, val, valy, test, testy = split_train_test()
+    train, trainy, val, valy, test, testy = split_train_test(np.load(train_data_path))
     
     #Creating the model structure
     siamese, encoder1, encoder2 = SiameseNetwork(input_shape = (5388, 20, 3))
@@ -202,7 +203,7 @@ if __name__ == "__main__":
     ori_train_file = pd.read_csv(train_file_path, sep = '\t')
 
     #Training model
-    model_hist, siamese, encoder1, encoder2 = train_network(model = siamese, encoder1 = encoder1, encoder2 = encoder2, train = train, trainy = trainy, val = val, valy = valy, train_files_df = ori_train_file, batchsize = 64, num_epochs = 1, model_save_path = "features/models/")
+    model_hist, siamese, encoder1, encoder2 = train_network(model = siamese, encoder1 = encoder1, encoder2 = encoder2, train = train, ytrain = trainy, val = val, yval = valy, train_files_df = ori_train_file, batchsize = 64, num_epochs = 1, model_save_path = "features/models/")
     
 
  
