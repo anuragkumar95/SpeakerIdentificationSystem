@@ -207,19 +207,27 @@ if __name__ == "__main__":
 
     ori_train_file = pd.read_csv(train_file_path, sep = '\t')
     
-    #Creating data pipeline
+    #Creating data pipeline training
     tfdata = tf.data.Dataset.from_tensor_slices(train)
     tflabels = tf.data.Dataset.from_tensor_slices(trainy)
     tfdata = tfdata.map(data_transform)
     training_data = tf.data.Dataset.zip((tfdata, tflabels)).batch(64)
-    iterator = tfdata.make_one_shot_iterator()
-    next_batch = iterator.get_next()
+    tr_iter = tfdata.make_one_shot_iterator()
+    next_batch = tr_iter.get_next()
+
+    #Creating data pipeline validation
+    tfval = tf.data.Dataset.from_tensor_slices(val)
+    tfvallabels = tf.data.Dataset.from_tensor_slices(valy)
+    tfdata = tfdata.map(data_transform)
+    val_data = tf.data.Dataset.zip((tfval, tfvallabels)).batch(64)
+    v_iter = tfdata.make_one_shot_iterator()
+    next_batch = v_iter.get_next()
     
     siamese.compile(optimizer = 'adam',\
                     loss = tf.keras.losses.BinaryCrossentropy(from_logits=True),\
                     metrics = ['accuracy'])
 
-    siamese.fit(trainin_data, epochs=2)
+    siamese.fit(training_data, epochs=2, validation_data=val_data)
 
 
     #Training model
