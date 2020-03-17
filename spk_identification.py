@@ -22,7 +22,8 @@ def make_feats(filename):
         ddelta = np.load(features_path + "DDMFCC/" + filename)
         return np.row_stack((mfcc, delta, ddelta))
 
-def data_transform(pairs, train, batchsize):    
+def data_transform(pairs):
+    train = pd.read_csv('train.tsv', sep = '\t')    
     files = []
     for p in pairs:
         files.append([train.iloc[p[0]]['path'], train.iloc[p[1]]['path']])
@@ -188,6 +189,10 @@ def train_network(model, encoder1, encoder2, train, ytrain, val, yval, batchsize
           
     return (hist, model, encoder1, encoder2)
 
+
+
+
+
 if __name__ == "__main__":
     #train tsv file
     train_file_path = sys.argv[1]
@@ -201,9 +206,24 @@ if __name__ == "__main__":
     siamese, encoder1, encoder2 = SiameseNetwork(input_shape = (5388, 20, 3))
 
     ori_train_file = pd.read_csv(train_file_path, sep = '\t')
+    
+    #Creating data pipeline
+    tfdata = tf.data.Dataset.from_tensor_slices(train)
+    tflabels = tf.data.Dataset.from_tensor_slices(trainy)
+    tfdata = tfdata.map(data_transform)
+    training_data = tf.data.Dataset.zip((tfdata, tflabels)).batch(64)
+    iterator = tfdata.make_one_shot_iterator()
+    next_batch = iterator.get_next()
+    
+    siamese.compile(optimizer = 'adam',\
+                    loss = tf.keras.losses.BinaryCrossentropy(from_logits=True),\
+                    metrics = ['accuracy'])
+
+    siamese.fit(trainin_data, epochs=2)
+
 
     #Training model
-    model_hist, siamese, encoder1, encoder2 = train_network(model = siamese, encoder1 = encoder1, encoder2 = encoder2, train = train, ytrain = trainy, val = val, yval = valy, train_files_df = ori_train_file, batchsize = 64, num_epochs = 1, model_save_path = "features/models/")
+    #model_hist, siamese, encoder1, encoder2 = train_network(model = siamese, encoder1 = encoder1, encoder2 = encoder2, train = train, ytrain = trainy, val = val, yval = valy, train_files_df = ori_train_file, batchsize = 64, num_epochs = 1, model_save_path = "features/models/")
     
 
  

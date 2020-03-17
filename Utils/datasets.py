@@ -45,6 +45,8 @@ def createDataset(clientID2Index):
   print(dataset.shape)
   np.save('SiameseDataset.npy', dataset)
 
+  
+
 
 if __name__ == '__main__':
     #Path to dataset tsv file
