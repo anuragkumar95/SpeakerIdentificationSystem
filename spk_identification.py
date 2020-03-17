@@ -16,11 +16,12 @@ from Utils.datasets import split_train_test
 
 def make_feats(filename):
         filename = filename.split('.')[0] + ".npy"
-        features_path = r'features/data/'
+        features_path = r'/features/data/'
         mfcc = np.load(features_path + "MFCC/" + filename)
         delta = np.load(features_path + "DMFCC/" + filename)
         ddelta = np.load(features_path + "DDMFCC/" + filename)
         return np.row_stack((mfcc, delta, ddelta))
+
 
 def data_transform(pairs):
     train = pd.read_csv('train.tsv', sep = '\t')    
@@ -207,6 +208,7 @@ if __name__ == "__main__":
 
     ori_train_file = pd.read_csv(train_file_path, sep = '\t')
     
+    '''
     #Creating data pipeline training
     tfdata = tf.data.Dataset.from_tensor_slices(train)
     tflabels = tf.data.Dataset.from_tensor_slices(trainy)
@@ -223,15 +225,16 @@ if __name__ == "__main__":
     v_iter = tfdata.make_one_shot_iterator()
     next_batch = v_iter.get_next()
     
+    #Compiling and training
     siamese.compile(optimizer = 'adam',\
                     loss = tf.keras.losses.BinaryCrossentropy(from_logits=True),\
                     metrics = ['accuracy'])
 
     siamese.fit(training_data, epochs=2, validation_data=val_data)
 
-
+    '''
     #Training model
-    #model_hist, siamese, encoder1, encoder2 = train_network(model = siamese, encoder1 = encoder1, encoder2 = encoder2, train = train, ytrain = trainy, val = val, yval = valy, train_files_df = ori_train_file, batchsize = 64, num_epochs = 1, model_save_path = "features/models/")
+    model_hist, siamese, encoder1, encoder2 = train_network(model = siamese, encoder1 = encoder1, encoder2 = encoder2, train = train, ytrain = trainy, val = val, yval = valy, train_files_df = ori_train_file, batchsize = 64, num_epochs = 1, model_save_path = "features/models/")
     
 
  
