@@ -28,11 +28,9 @@ Run the command ```python Evaluation.py "path_to_train_tsv_file"```. I trained t
 ![Loss and Accuracy curves](Plots/LossAcc.PNG)
 
 ## Embeddings
-We plotted the embeddings we got from our testing set of 400 voice samples taken from the trained model. This dataset also had the same 28 speakers. We did tSNE over the embeddings.
-![tSNE over embeddings](Plots/tsne.png)
+![tSNE over embeddings](Plots/tsne.png)  
 
-## Embeddings
-We 
+We plotted the embeddings we got from our testing set of 400 voice samples taken from the trained model. This dataset also had the same 28 speakers. We did tSNE over the embeddings.
 
 Author: Anurag Kumar
 
